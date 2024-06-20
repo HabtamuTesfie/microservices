@@ -1,4 +1,4 @@
-package et.com;
+package et.com.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

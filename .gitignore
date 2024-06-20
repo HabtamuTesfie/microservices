@@ -1,0 +1,12 @@
+# Ignore all files and directories under
+mongo-data/
+mysql_keycloak_data/
+postgres-inventory/
+postgres-order/
+
+# Other files or directories to ignore
+node_modules/
+dist/
+*.log
+*.idea
+.env

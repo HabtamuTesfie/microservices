@@ -1,5 +1,6 @@
-package et.com;
+package et.com.config;
 
+import et.com.dto.OrderPlacedEvent;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +14,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 @RequiredArgsConstructor
 public class ManualConfiguration {
 
-    private final ConcurrentKafkaListenerContainerFactory concurrentKafkaListenerContainerFactory;
+    private final ConcurrentKafkaListenerContainerFactory<String, OrderPlacedEvent> concurrentKafkaListenerContainerFactory;
 
     @PostConstruct
     void setup() {
