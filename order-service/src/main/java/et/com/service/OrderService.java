@@ -75,44 +75,6 @@ public class OrderService {
 
     }
 
-    public String placeOrder2(OrderRequest orderRequest) {
-        Order order = new Order();
-        order.setOrderNumber(UUID.randomUUID().toString());
-
-        List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList()
-            .stream()
-            .map(this::mapToDto)
-            .toList();
-
-        order.setOrderLineItemsList(orderLineItems);
-
-        List<String> skuCodes = order.getOrderLineItemsList().stream()
-            .map(OrderLineItems::getSkuCode)
-            .toList();
-
-        // Call Inventory Service, and place order if product is in stock
-        InventoryResponse[] inventoryResponseArray = webClientBuilder.build().get()
-            .uri("http://inventory-service/api/inventory",
-                uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build())
-            .retrieve()
-            .bodyToMono(InventoryResponse[].class)
-            .block();
-
-        assert inventoryResponseArray != null;
-        boolean allProductsInStock = Arrays.stream(inventoryResponseArray)
-            .allMatch(InventoryResponse::isInStock);
-
-        if (allProductsInStock) {
-            orderRepository.save(order);
-            // publish Order Placed Event
-           // applicationEventPublisher.publishEvent(new OrderPlacedEvent(this, order.getOrderNumber()));
-            return "Order Placed";
-        } else {
-            throw new IllegalArgumentException("Product is not in stock, please try again later");
-        }
-    }
-
-
     private OrderLineItems mapToDto(OrderLineItemsDto orderLineItemsDto) {
         OrderLineItems orderLineItems = new OrderLineItems();
         orderLineItems.setPrice(orderLineItemsDto.getPrice());

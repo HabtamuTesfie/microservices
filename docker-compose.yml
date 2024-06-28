@@ -1,6 +1,17 @@
 ---
 version: '3.7'
 services:
+  ## Redis Docker Compose Config
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis-data:/data
+    restart: always
+
+
   ## MySQL Docker Compose Config
   postgres-order:
     container_name: postgres-order
@@ -9,14 +20,13 @@ services:
       POSTGRES_DB: order-service
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      PGDATA: /data/postgres
+      PGDATA: /data/postgres-order  # Different data directory for order-service
     volumes:
-      - ./postgres-order:/data/postgres
+      - ./postgres-order:/data/postgres-order  # Use a unique volume for order-service
     expose:
-      - "5431"
+      - "5432"
     ports:
-      - "5431:5431"
-    command: -p 5431
+      - "5433:5432"
     restart: always
 
   postgres-inventory:
@@ -26,9 +36,9 @@ services:
       POSTGRES_DB: inventory-service
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      PGDATA: /data/postgres
+      PGDATA: /data/postgres-inventory  # Different data directory for inventory-service
     volumes:
-      - ./postgres-inventory:/data/postgres
+      - ./postgres-inventory:/data/postgres-inventory  # Use a unique volume for inventory-service
     ports:
       - "5432:5432"
     restart: always
@@ -44,7 +54,12 @@ services:
       - "27017"
     volumes:
       - ./mongo-data:/data/db
-
+    command: >
+      sh -c "
+      rm -rf /data/db/* &&
+      mongod --bind_ip_all --repair &&
+      mongod --bind_ip_all
+      "
   ## Keycloak Config with Mysql database
   keycloak-mysql:
     container_name: keycloak-mysql
@@ -118,6 +133,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       - zipkin
+    pull_policy: always
 
   api-gateway:
     image: registry.hub.docker.com/habtish/api-gateway:latest
@@ -133,6 +149,7 @@ services:
       - zipkin
       - discovery-server
       - keycloak
+    pull_policy: always
 
   ## Product-Service Docker Compose Config
   product-service:
@@ -144,6 +161,7 @@ services:
       - mongo
       - discovery-server
       - api-gateway
+    pull_policy: always
 
   ## Order-Service Docker Compose Config
   order-service:
@@ -151,7 +169,7 @@ services:
     image: registry.hub.docker.com/habtish/order-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-order:5431/order-service
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-inventory:5432/order_service
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=password
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
@@ -163,6 +181,7 @@ services:
       - zipkin
       - discovery-server
       - api-gateway
+    pull_policy: always
 
   ## Inventory-Service Docker Compose Config
   inventory-service:
@@ -180,6 +199,7 @@ services:
       - postgres-inventory
       - discovery-server
       - api-gateway
+    pull_policy: always
 
   ## Notification-Service Docker Compose Config
   notification-service:
@@ -192,6 +212,7 @@ services:
       - broker
       - discovery-server
       - api-gateway
+    pull_policy: always
 
   ## Prometheus
   prometheus:
