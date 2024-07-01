@@ -31,7 +31,12 @@ docker-compose up -d
 docker-compose ps
 ```
 **Keycloak Setup**
+### Access Keycloak
 
+- URL: [http://localhost:8080](http://localhost:8080)
+- Default credentials:
+    - Username: `admin`
+    - Password: `admin`
 - **Create a Realm**
     1. Go to the top left of the dashboard and hover over "Master".
     2. Click "Add realm".
