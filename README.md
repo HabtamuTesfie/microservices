@@ -28,8 +28,12 @@ ensure scalability, reliability, and observability.
 git clone https://github.com/HabtamuTesfie/microservices.git
 cd microservices
 docker-compose up -d
-docker-compose ps
 ```
+## Run the following command to check the status of each containers.
+```sh
+docker-compose ps 
+```
+
 **Keycloak Setup**
 ### Access Keycloak
 
