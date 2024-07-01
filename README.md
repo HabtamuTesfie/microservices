@@ -29,13 +29,13 @@ git clone https://github.com/HabtamuTesfie/microservices.git
 cd microservices
 docker-compose up -d
 ```
-## Run the following command to check the status of each container.
+**Run the following command to check the status of each container.**
 ```sh
 docker-compose ps 
 ```
 
-**Keycloak Setup**
-### Access Keycloak
+### Keycloak Setup
+ **Access Keycloak**
 
 - URL: [http://localhost:8080](http://localhost:8080)
 - Default credentials:
