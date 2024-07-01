@@ -11,8 +11,7 @@ services:
       - ./redis-data:/data
     restart: always
 
-
-  ## MySQL Docker Compose Config
+  ## Postgres Docker Compose Config
   postgres-order:
     container_name: postgres-order
     image: postgres
@@ -20,9 +19,9 @@ services:
       POSTGRES_DB: order-service
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      PGDATA: /data/postgres-order  # Different data directory for order-service
+      PGDATA: /data/postgres-order
     volumes:
-      - ./postgres-order:/data/postgres-order  # Use a unique volume for order-service
+      - ./postgres-order:/data/postgres-order
     expose:
       - "5432"
     ports:
@@ -36,9 +35,9 @@ services:
       POSTGRES_DB: inventory-service
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      PGDATA: /data/postgres-inventory  # Different data directory for inventory-service
+      PGDATA: /data/postgres-inventory
     volumes:
-      - ./postgres-inventory:/data/postgres-inventory  # Use a unique volume for inventory-service
+      - ./postgres-inventory:/data/postgres-inventory
     ports:
       - "5432:5432"
     restart: always
@@ -135,6 +134,7 @@ services:
       - zipkin
     pull_policy: always
 
+  # API Gatewaye
   api-gateway:
     image: registry.hub.docker.com/habtish/api-gateway:latest
     container_name: api-gateway
@@ -169,7 +169,7 @@ services:
     image: registry.hub.docker.com/habtish/order-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-inventory:5432/order_service
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-order:5432/order-service
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=password
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
@@ -229,6 +229,7 @@ services:
       - order-service
       - notification-service
 
+  # Grafana
   grafana:
     image: grafana/grafana-oss:8.5.2
     container_name: grafana

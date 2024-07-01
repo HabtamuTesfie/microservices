@@ -3,6 +3,7 @@ mongo-data/
 mysql_keycloak_data/
 postgres-inventory/
 postgres-order/
+redis-data/
 
 # Other files or directories to ignore
 node_modules/
