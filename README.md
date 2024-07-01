@@ -29,7 +29,7 @@ git clone https://github.com/HabtamuTesfie/microservices.git
 cd microservices
 docker-compose up -d
 ```
-## Run the following command to check the status of each containers.
+## Run the following command to check the status of each container.
 ```sh
 docker-compose ps 
 ```
